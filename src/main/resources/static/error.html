@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Repository Registration Error Page</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            /* Full-width input fields */
+            input[type=text], input[type=password], input[type=url],label{
+                width: 100%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                display: inline-block;
+                border: none;
+                background: #f1f1f1;
+            }
+
+            input[type=email] {
+                width: 95%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                display: inline-block;
+                border: none;
+                background: #f1f1f1;
+            }
+
+
+            /* Add a background color when the inputs get focus */
+            input[type=text]:focus, input[type=password]:focus,input[type=email]:focus,input[type=url]:focus {
+                background-color: #ddd;
+                outline: none;
+            }
+
+            /* Set a style for all buttons */
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+                opacity: 0.9;
+            }
+
+            button:hover {
+                opacity:1;
+            }
+
+            /* Extra styles for the cancel button */
+            .cancelbtn {
+                padding: 14px 20px;
+                background-color: #f44336;
+            }
+
+            /* Float cancel and signup buttons and add an equal width */
+            .cancelbtn, .registerbtn{
+                float: left;
+                width: 50%;
+            }
+
+            /* Add padding to container elements */
+            .container {
+                padding: 10px;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                /*background-color: #474e5d;*/
+                padding-top: 10px;
+                background-color:rgb(0,0,0);
+                background-color:rgba(0,0,0,0.4)
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto 3% auto;  /*5% from the top, 15% from the bottom and centered */
+                border: 1px solid #888;
+                width: 50%; /* Could be more or less, depending on screen size */
+                height: 85%; /*Modified for height of modal dialog*/
+                overflow: auto;  /*Enable scroll if needed */
+            }
+
+            /* Style the header */
+            header {
+                background-color: #666;
+                padding: 30px;
+                text-align: left;
+                font-size: 25px;
+                color: white;
+            }
+
+            /* Clear floats after the columns */
+
+            section:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* Style the footer */
+            footer {
+                background-color: #777;
+                padding: 10px;
+                text-align: center;
+                color: white;
+            }
+            code { 
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body >
+
+        <header>
+            <img src="images/emoji_error.png">
+            <h2>Some thing went wrong!</h2>
+
+        </header>
+        <section>
+            <div id="error_div">
+                <form id="regstatus_form" class="modal-content" >
+                    <div class="container">
+                        <div style="color: red"><h1>Error</h1></div>
+                            <label id="error_message">We are looking into it.</label>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <footer>
+            <p><img src="images/mit_license.png"> <code>MIT License</code></p>
+        </footer>
+    </body>
+</html>

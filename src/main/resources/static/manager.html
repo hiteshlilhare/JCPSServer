@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Java Card Play Store Repository Management</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            /* Full-width input fields */
+            input[type=text], input[type=password], input[type=url],select,option{
+                width: 100%;
+                padding: 15px;
+                margin: 5px 0 15px 0; /*5% from the top, 3% from the bottom and centered */
+                display: inline-block;
+                border: none;
+                background: #f1f1f1;
+            }
+
+
+            input[type=email] {
+                width: 95%;
+                padding: 15px;
+                margin: 5px 0 15px 0;
+                display: inline-block;
+                border: none;
+                background: #f1f1f1;
+            }
+
+
+            /* Add a background color when the inputs get focus */
+            input[type=text]:focus, input[type=password]:focus,input[type=email]:focus,input[type=url]:focus,select:focus,option:focus {
+                background-color: #ddd;
+                outline: none;
+            }
+
+            /* Set a style for all buttons */
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+                opacity: 0.9;
+            }
+
+            button:hover {
+                opacity:1;
+            }
+
+            /* Extra styles for the cancel button */
+            .cancelbtn {
+                padding: 14px 20px;
+                background-color: #f44336;
+            }
+
+            /* Float cancel and signup buttons and add an equal width */
+            .cancelbtn, .registerbtn{
+                float: left;
+                width: 50%;
+            }
+
+            /* Add padding to container elements */
+            .container {
+                padding: 10px;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                /*background-color: #474e5d;*/
+                /*padding-top: 5px;*/
+                background-color:rgb(0,0,0);
+                background-color:rgba(0,0,0,0.4)
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 1% auto 1% auto;  /*5% from the top, 3% from the bottom and centered */
+                border: 1px solid #888;
+                width: 100%; /* Could be more or less, depending on screen size */
+                height: 90%; /*Modified for height of modal dialog*/
+                overflow: auto;  /*Enable scroll if needed */
+            }
+
+            .modal-content-menu-div {
+                background-color: #fefefe;
+                margin: 1% auto 1% auto;  /*5% from the top, 3% from the bottom and centered */
+                border: 1px solid #888;
+                width: 100%; /* Could be more or less, depending on screen size */
+                height: 90%; /*Modified for height of modal dialog*/
+                overflow: auto;  /*Enable scroll if needed */
+            }
+
+            /* Style the horizontal ruler */
+            hr {
+                border: 1px solid #f1f1f1;
+                margin-bottom: 25px;
+            }
+
+            /* The Close Button (x) */
+            .close {
+                position: absolute;
+                right: 35px;
+                top: 15px;
+                font-size: 40px;
+                font-weight: bold;
+                color: #f1f1f1;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #f44336;
+                cursor: pointer;
+            }
+
+            /* Clear floats */
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+
+            /* Change styles for cancel button and signup button on extra small screens */
+            @media screen and (max-width: 300px) {
+                .cancelbtn, .registerbtn {
+                    width: 100%;
+                }
+            }
+
+            /* Style the header */
+            header {
+                background-color: #666;
+                padding: 10px;
+                text-align: left;
+                font-size: 25px;
+                color: white;
+                /*height: 15%;*/
+            }
+
+            /* Create two columns/boxes that floats next to each other */
+            nav {
+                float: left;
+                width: 20%;
+                height: 745px;  /*only for demonstration, should be removed */
+                background: #ccc;
+                padding: 10px;
+                /*height: 80%;*/
+            }
+
+            /* Style the list inside the menu */
+            nav ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            article {
+                float: left;
+                padding: 10px;
+                width: 80%;
+                background-color: #f1f1f1;
+                height: 745px;  /*only for demonstration, should be removed */
+                /*height: 80%;*/
+            }
+
+            /* Clear floats after the columns */
+
+            section:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* Style the footer */
+            footer {
+                background-color: #777;
+                padding: 10px;
+                text-align: center;
+                color: white;
+                /*height: 10%;*/
+            }
+            code { 
+                font-family: monospace;
+            }
+            .undecorate {
+                text-decoration: none;
+            }
+
+            .blink_text {
+
+                animation:1s blinker linear infinite;
+                -webkit-animation:1s blinker linear infinite;
+                -moz-animation:1s blinker linear infinite;
+            }
+
+            @-moz-keyframes blinker {  
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+
+            @-webkit-keyframes blinker {  
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+
+            @keyframes blinker {  
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+
+            /* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+            @media (max-width: 600px) {
+                nav, article {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            /* reset our lists to remove bullet points and padding */
+            .mainmenu, .submenu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* make ALL links (main and submenu) have padding and background color */
+            .mainmenu a {
+                display: block;
+                background-color: #CCC;
+                text-decoration: none;
+                padding: 10px;
+                color: #000;
+            }
+
+            /* add hover behaviour */
+            .mainmenu a:hover {
+                background-color: #C5C5C5;
+            }
+
+
+            /* when hovering over a .mainmenu item,
+              display the submenu inside it.
+              we're changing the submenu's max-height from 0 to 200px;
+            */
+
+            .mainmenu li:hover .submenu {
+                display: block;
+                max-height: 200px;
+            }
+
+            /*
+              we now overwrite the background-color for .submenu links only.
+              CSS reads down the page, so code at the bottom will overwrite the code at the top.
+            */
+
+            .submenu a {
+                background-color: #999;
+            }
+
+            /* hover behaviour for links inside .submenu */
+            .submenu a:hover {
+                background-color: #666;
+            }
+
+            /* this is the initial state of all submenus.
+              we set it to max-height: 0, and hide the overflowed content.
+            */
+            .submenu {
+                overflow: hidden;
+                max-height: 0;
+                -webkit-transition: all 0.5s ease-out;
+            }
+
+
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            th, td, caption{
+                padding: 5px;
+                text-align: left;
+            }
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            /*
+            for making other menu div invisible.
+            */
+            #about_div,#contactus_div,#manage_release_div,#request_div,#remove_div {
+                display: none; /* Hidden by default */
+            }
+            #release_update_status{
+                display: none;
+                background-color: yellow;
+                margin-left: 10px;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <header>
+            <h2>Java Card Play Store Repository Management</h2>
+
+        </header>
+        <div style="height: 100%">
+            <section>
+                <nav>
+                    <ul class="mainmenu">
+                        <li><a href="javascript:show_home_div()">Home</a></li>
+                        <li><a href="#">Manage</a>
+                            <ul class="submenu">
+                                <li><a href="javascript:show_manage_release_div()">Manage Releases</a></li>
+                                <li><a href="javascript:show_request_div()">Show Request</a></li>
+                                <li><a href="javascript:show_remove_div()">Remove</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="javascript:show_about_div()">About</a></li>
+                        <li><a href="javascript:show_contactus_div()">Contact us</a></li>      
+                    </ul>
+                </nav>
+                <article id="article1">
+                    <div id="home_div">
+                        <h1>Home</h1>
+                        <p>This is to manage the repository database based on explicit request from user or decision made up by the Java Card Play Store authority</p>
+                    </div>
+                    <div id="about_div">
+                        <h1>About</h1>
+                        <p>This is to manage the repository database based on explicit request from user or decision made up by the Java Card Play Store authority</p>
+                    </div>
+                    <div id="contactus_div">
+                        <h1>Contact us</h1>
+                        <p>Street number 420</p>
+                        <p>Excuse us please!!!</p>
+                    </div>
+                    <div id="manage_release_div" >
+                        <div id="manage_release_form" class="modal-content" >
+                            <div id = "manage_release_form_div" class="container">
+                                <h1>Manage Releases</h1>
+                                <p>Before releasing any of the repository releases please check the corresponding app store has all required artifacts.</p>
+                                <table id='review_release_table' style='width:100%'>
+                                    <caption><b>List of Apps, which are in preverified state</b></caption>
+                                    <tr>
+                                        <th>App Name [Repo Name]</th>
+                                        <th>Version [Tag Name]</th>
+                                        <th >Developer Id [Repo User Id]</th>
+                                        <th style="display: none" >App Clone URL</th>
+                                        <th>Releasen Date</th>
+                                        <th>Tested On</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                        <th style="display: none">Rating</th>
+                                    </tr>   
+                                </table>
+                            </div>
+                            <div id='release_update_status' >status</div>
+                        </div>
+                    </div>
+                    <div id="request_div">
+                        <form id="manage_request_form" class="modal-content" method="post" >
+                            <div class="container">
+
+                            </div>
+                        </form>
+                    </div>
+                    <div id="remove_div">
+                        <form id="remove_form" class="modal-content" method="post" >
+                            <div class="container">
+
+                            </div>
+                        </form>
+                    </div>
+                </article>
+            </section>
+        </div>
+        <footer>
+            <p><img src="images/mit_license.png"> <code>MIT License</code></p>
+        </footer>
+        <script>
+            function toggle_javacard_list_display(idx) {
+                var jclist = document.getElementById('jclist' + idx);
+                var testedon_ancr = document.getElementById('testedon_anchor' + idx);
+                if (jclist.style.display == 'none') {
+                    jclist.style.display = 'inline';
+                    testedon_ancr.innerHTML = 'Hide';
+                } else if (jclist.style.display == 'inline') {
+                    jclist.style.display = 'none';
+                    testedon_ancr.innerHTML = 'Show';
+                }
+            }
+            ;
+            var ReleaseRow = {
+                rowidx: -1,
+                colidx: -1,
+                getRowIdx: function () {
+                    return this.rowidx;
+                },
+                getColIdx: function () {
+                    return this.colidx;
+                },
+                setRowIdx: function (ridx) {
+                    this.rowidx = ridx;
+                },
+                setColIdx: function (cidx) {
+                    this.colidx = cidx;
+                },
+                show: function () {
+                    alert(this.rowidx + " " + this.colidx);
+                }
+            }
+            ;
+
+            function verify_release(row) {
+                document.getElementById("release_update_status").style.display = 'none';
+                if (row.cellIndex) {
+                    ReleaseRow.setColIdx(row.cellIndex);
+                }
+                if (row.rowIndex) {
+                    if (ReleaseRow.getColIdx() === 9) {
+                        ReleaseRow.setRowIdx(row.rowIndex);
+                    }
+                }
+                if (ReleaseRow.getColIdx() === -1 || ReleaseRow.getRowIdx() === -1) {
+                    return;
+                }
+                var obj = {};
+                var values = document.getElementById("review_release_table").rows[ReleaseRow.getRowIdx()].cells;
+
+                obj[ "release-app-name" ] = values[0].innerHTML;
+                obj[ "release-app-version" ] = values[1].innerHTML;
+                obj[ "developer-id" ] = values[2].innerHTML;
+                obj[ "release-app-cloneurl" ] = values[3].getElementsByTagName("input")[0].value;
+                obj[ "release-date" ] = values[4].innerHTML;
+                obj[ "release-tested-on" ] = get_tested_on_javacards(ReleaseRow.getRowIdx());
+                var e = values[6].getElementsByTagName("select")[0];
+                obj[ "release-status" ] = e.options[e.selectedIndex].value;
+                obj[ "release-remarks" ] = values[7].getElementsByTagName("input")[0].value;
+                obj[ "release-app-rating" ] = values[8].innerHTML;
+                var rowJson = JSON.stringify(obj);
+                var data = rowJson;
+                var xhr = new XMLHttpRequest();
+                var url = "verifyRelease";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        manage_releases();
+                        var json = JSON.parse(xhr.responseText);
+                        document.getElementById('release_update_status').innerHTML = json.Status;
+                        document.getElementById("release_update_status").style.display = 'inline';
+                    }
+                };
+                //alert(data);
+                xhr.send(data);
+                //must be done
+                ReleaseRow.setRowIdx(-1);
+                ReleaseRow.setColIdx(-1)
+            }
+            ;
+            function get_tested_on_javacards(rowidx) {
+                var list = Array();
+                var jclist = document.getElementById('jclist' + rowidx);
+                var inputElements = jclist.getElementsByTagName('input');
+                for (var i = 0; i < inputElements.length; i++) {
+                    if (inputElements[i].checked) {
+                        list.push(inputElements[i].value);
+                    }
+                }
+                return list;
+            }
+            ;
+
+            function show_home_div() {
+                document.getElementById('home_div').style.display = 'inline';
+                document.getElementById('about_div').style.display = 'none';
+                document.getElementById('contactus_div').style.display = 'none';
+                document.getElementById('manage_release_div').style.display = 'none';
+                document.getElementById('request_div').style.display = 'none';
+                document.getElementById('remove_div').style.display = 'none';
+            }
+            ;
+
+            function show_contactus_div() {
+                document.getElementById('home_div').style.display = 'none';
+                document.getElementById('about_div').style.display = 'none';
+                document.getElementById('contactus_div').style.display = 'inline';
+                document.getElementById('manage_release_div').style.display = 'none';
+                document.getElementById('request_div').style.display = 'none';
+                document.getElementById('remove_div').style.display = 'none';
+            }
+            ;
+
+            function show_about_div() {
+                document.getElementById('home_div').style.display = 'none';
+                document.getElementById('about_div').style.display = 'inline';
+                document.getElementById('contactus_div').style.display = 'none';
+                document.getElementById('manage_release_div').style.display = 'none';
+                document.getElementById('request_div').style.display = 'none';
+                document.getElementById('remove_div').style.display = 'none';
+            }
+            ;
+
+            function show_manage_release_div() {
+                document.getElementById('home_div').style.display = 'none';
+                document.getElementById('about_div').style.display = 'none';
+                document.getElementById('contactus_div').style.display = 'none';
+                document.getElementById('manage_release_div').style.display = 'flex';
+                document.getElementById('request_div').style.display = 'none';
+                document.getElementById('remove_div').style.display = 'none';
+                document.getElementById('release_update_status').innerHTML = "";
+                document.getElementById("release_update_status").style.display = 'none';
+                manage_releases();
+            }
+            ;
+
+            function manage_releases() {
+                var xhr = new XMLHttpRequest();
+                var url = "manageReleases";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var json = JSON.parse(xhr.responseText);
+                        document.getElementById('manage_release_form_div').innerHTML = json.Code;
+                    }
+                };
+                xhr.send();
+            }
+
+            function show_request_div() {
+                document.getElementById('home_div').style.display = 'none';
+                document.getElementById('about_div').style.display = 'none';
+                document.getElementById('contactus_div').style.display = 'none';
+                document.getElementById('manage_release_div').style.display = 'none';
+                document.getElementById('request_div').style.display = 'flex';
+                document.getElementById('remove_div').style.display = 'none';
+            }
+            ;
+
+            function show_remove_div() {
+                document.getElementById('home_div').style.display = 'none';
+                document.getElementById('about_div').style.display = 'none';
+                document.getElementById('contactus_div').style.display = 'none';
+                document.getElementById('manage_release_div').style.display = 'none';
+                document.getElementById('request_div').style.display = 'none';
+                document.getElementById('remove_div').style.display = 'flex';
+            }
+            ;
+
+            function isBlank(str) {
+                return (!str || /^\s*$/.test(str));
+            }
+
+            (function () {
+                const isValidElement = element => {
+                    return element.name && element.value;
+                };
+                function toJSONString(form) {
+                    var obj = {};
+                    var elements = form.querySelectorAll("input");
+                    for (var i = 0; i < elements.length; ++i) {
+                        var element = elements[i];
+                        if (isValidElement(element)) {
+                            var name = element.name;
+                            var value = element.value;
+
+                            if (name) {
+                                obj[ name ] = value;
+                            }
+                        }
+                    }
+                    return JSON.stringify(obj);
+                }
+                ;
+
+            })();
+        </script>
+
+    </body>
+</html>

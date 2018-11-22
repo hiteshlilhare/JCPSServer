@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Repository Registration Status Check</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            /* Full-width input fields */
+            input[type=text], input[type=password], input[type=url] {
+                width: 100%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                display: inline-block;
+                border: none;
+                background: #f1f1f1;
+            }
+
+            input[type=email] {
+                width: 95%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                display: inline-block;
+                border: none;
+                background: #f1f1f1;
+            }
+
+
+            /* Add a background color when the inputs get focus */
+            input[type=text]:focus, input[type=password]:focus,input[type=email]:focus,input[type=url]:focus {
+                background-color: #ddd;
+                outline: none;
+            }
+
+            /* Set a style for all buttons */
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+                opacity: 0.9;
+            }
+
+            button:hover {
+                opacity:1;
+            }
+
+            /* Extra styles for the cancel button */
+            .cancelbtn {
+                padding: 14px 20px;
+                background-color: #f44336;
+            }
+
+            /* Float cancel and signup buttons and add an equal width */
+            .cancelbtn, .registerbtn{
+                float: left;
+                width: 50%;
+            }
+
+            /* Add padding to container elements */
+            .container {
+                padding: 10px;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                /*background-color: #474e5d;*/
+                padding-top: 10px;
+                background-color:rgb(0,0,0);
+                background-color:rgba(0,0,0,0.4)
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 2% auto 2% auto;  /*5% from the top, 15% from the bottom and centered */
+                border: 1px solid #888;
+                width: 50%; /* Could be more or less, depending on screen size */
+                height: 85%; /*Modified for height of modal dialog*/
+                overflow: auto;  /*Enable scroll if needed */
+            }
+
+            /* Style the horizontal ruler */
+            hr {
+                border: 1px solid #f1f1f1;
+                margin-bottom: 25px;
+            }
+
+            /* The Close Button (x) */
+            .close {
+                position: absolute;
+                right: 35px;
+                top: 15px;
+                font-size: 40px;
+                font-weight: bold;
+                color: #f1f1f1;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #f44336;
+                cursor: pointer;
+            }
+
+            /* Clear floats */
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+
+            /* Change styles for cancel button and signup button on extra small screens */
+            @media screen and (max-width: 300px) {
+                .cancelbtn, .registerbtn {
+                    width: 100%;
+                }
+            }
+
+            /* Style the header */
+            header {
+                background-color: #666;
+                padding: 30px;
+                text-align: left;
+                font-size: 25px;
+                color: white;
+            }
+
+            /* Create two columns/boxes that floats next to each other */
+            nav {
+                float: left;
+                width: 30%;
+                height: 715px; /* only for demonstration, should be removed */
+                background: #ccc;
+                padding: 20px;
+            }
+
+            /* Style the list inside the menu */
+            nav ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            article {
+                float: left;
+                padding: 20px;
+                width: 70%;
+                background-color: #f1f1f1;
+                height: 715px; /* only for demonstration, should be removed */
+            }
+
+            /* Clear floats after the columns */
+
+            section:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* Style the footer */
+            footer {
+                background-color: #777;
+                padding: 10px;
+                text-align: center;
+                color: white;
+            }
+            code { 
+                font-family: monospace;
+            }
+            .undecorate {
+                text-decoration: none;
+            }
+
+            .blink_text,#confirmation_status_label {
+
+                animation:1s blinker linear infinite;
+                -webkit-animation:1s blinker linear infinite;
+                -moz-animation:1s blinker linear infinite;
+            }
+
+            @-moz-keyframes blinker {  
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+
+            @-webkit-keyframes blinker {  
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+
+            @keyframes blinker {  
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+
+            /* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+            @media (max-width: 600px) {
+                nav, article {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            /* reset our lists to remove bullet points and padding */
+            .mainmenu, .submenu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* make ALL links (main and submenu) have padding and background color */
+            .mainmenu a {
+                display: block;
+                background-color: #CCC;
+                text-decoration: none;
+                padding: 10px;
+                color: #000;
+            }
+
+            /* add hover behaviour */
+            .mainmenu a:hover {
+                background-color: #C5C5C5;
+            }
+
+
+            /* when hovering over a .mainmenu item,
+              display the submenu inside it.
+              we're changing the submenu's max-height from 0 to 200px;
+            */
+
+            .mainmenu li:hover .submenu {
+                display: block;
+                max-height: 200px;
+            }
+
+            /*
+              we now overwrite the background-color for .submenu links only.
+              CSS reads down the page, so code at the bottom will overwrite the code at the top.
+            */
+
+            .submenu a {
+                background-color: #999;
+            }
+
+            /* hover behaviour for links inside .submenu */
+            .submenu a:hover {
+                background-color: #666;
+            }
+
+            /* this is the initial state of all submenus.
+              we set it to max-height: 0, and hide the overflowed content.
+            */
+            .submenu {
+                overflow: hidden;
+                max-height: 0;
+                -webkit-transition: all 0.5s ease-out;
+            }
+            
+            #confirmation_status_label {
+                color: red;
+            }
+
+        </style>
+    </head>
+    <body onload="document.getElementById('github-repo-url').value = '<repo-url-place-holder>';
+            document.getElementById('confirmation_status_label').innerHTML = '<confirmation-status-place-holder>';
+            document.getElementById('guideline_div').style.display = '<guideline-display-place-holder>';">
+
+        <header>
+            <h2>Repository Registration Status Check</h2>
+
+        </header>
+        <section>
+            <div id="regstatus_div">
+                <form id="regstatus_form" class="modal-content" method="post" onsubmit="return false;">
+                    <div class="container">
+                        <h1>Registration Status</h1>
+                        <label id="confirmation_status_label"></label>
+                        <p>Please provide GitHub repository url for status query.</p>
+                        <label for="github-repo-url"><b>GitHub Repo URL</b></label>
+                        <input id="github-repo-url" type="url" maxlength="100" placeholder="Enter GitHub Repo URL" name="github-repo-url" required readonly pattern="https?://.+">
+                        <button type="submit" onclick="javascript:queryStatus();" class=".registerbtn">Query</button>                                
+                        <label id="reg_status_label"></label>
+                    </div>
+                    <div id="guideline_div">
+                    <label><b>Guidelines:</b></label>
+                    <ol type="1">
+                        <li><a href="https://www.gnupg.org/gph/en/manual.html" target="_blank">Create GPG key</a> with sign and encrypt capability.</li>
+                        <li>Specify email id used for GitHub account while creating key</li>
+                        <li>Add GPG public key to GitHub account</li>
+                        <li>Use the same for GitHub signed tag</li>
+                        <li>Configure git <code>user.email</code> and <code>user.signingkey</code> property</li>
+                    </ol>
+                </div>
+                </form>
+            </div>
+
+        </section>
+        <footer>
+            <p><img src="images/mit_license.png"> <code>MIT License</code></p>
+        </footer>
+        <script>
+            function queryStatus() {
+                var frm = document.getElementById("regstatus_form");
+                var data = {};
+                var elements = frm.querySelectorAll('input');
+                for (var i = 0; i < elements.length; ++i) {
+                    var element = elements[i];
+                    if (element.name && element.value) {
+                        var name = element.name;
+                        var value = element.value;
+
+                        if (name) {
+                            data[ name ] = value;
+                        }
+                    }
+                }
+                var xhr = new XMLHttpRequest();
+                var url = "regstatus";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var json = JSON.parse(xhr.responseText);
+                        document.getElementById('reg_status_label').innerHTML = json.Status;
+                    }
+                };
+                xhr.send(JSON.stringify(data));
+            }
+        </script>
+    </body>
+</html>
