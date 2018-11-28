@@ -4,7 +4,7 @@ import com.github.hiteshlilhare.jcpss.JCPSSCOnstants;
 import com.github.hiteshlilhare.jcpss.bean.ReleasedApp;
 import com.github.hiteshlilhare.jcpss.bean.RepoDetail;
 import com.github.hiteshlilhare.jcpss.exception.FieldNotPresentException;
-import com.github.hiteshlilhare.jcpss.exception.FiledNotPresentException;
+import com.github.hiteshlilhare.jcpss.exception.FileNotPresentException;
 import com.github.hiteshlilhare.jcpss.exception.UnexpectedInputLengthException;
 import com.github.hiteshlilhare.jcpss.util.Util;
 import java.io.IOException;
@@ -50,9 +50,9 @@ public class FileController {
      * @param path
      * @param fileName
      * @return
-     * @throws FiledNotPresentException
+     * @throws FileNotPresentException
      */
-    public Resource loadFileAsResource(String path, String fileName) throws FiledNotPresentException {
+    public Resource loadFileAsResource(String path, String fileName) throws FileNotPresentException {
         try {
             Path fileStorageLocation = Paths.get(path);
             Path filePath = fileStorageLocation.resolve(fileName).normalize();
@@ -60,10 +60,10 @@ public class FileController {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new FiledNotPresentException("File not found " + fileName);
+                throw new FileNotPresentException("File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new FiledNotPresentException("File not found " + fileName, ex);
+            throw new FileNotPresentException("File not found " + fileName, ex);
         }
     }
 
@@ -104,7 +104,7 @@ public class FileController {
                     .body(resource);
         } catch (IOException ex) {
             logger.info("downloadEncRand:IOException:Could not determine file type.");
-        } catch (FiledNotPresentException | UnexpectedInputLengthException ex) {
+        } catch (FileNotPresentException | UnexpectedInputLengthException ex) {
             logger.info("downloadEncRand:IOException:" + ex.getMessage());
         }
         return ResponseEntity.ok()
@@ -181,7 +181,7 @@ public class FileController {
             logger.info("downloadServPubkey:IOException:Could not determine file type.");
         } catch (FieldNotPresentException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FiledNotPresentException ex) {
+        } catch (FileNotPresentException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ResponseEntity.ok()
