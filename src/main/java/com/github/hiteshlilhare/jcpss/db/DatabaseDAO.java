@@ -7,7 +7,6 @@ package com.github.hiteshlilhare.jcpss.db;
 
 import com.github.hiteshlilhare.jcpss.bean.RepoDetail;
 import com.github.hiteshlilhare.jcpss.StatusMessage;
-import com.github.hiteshlilhare.jcpss.bean.GitHubRelease;
 import com.github.hiteshlilhare.jcpss.bean.ReleasedApp;
 import java.util.ArrayList;
 

@@ -40,32 +40,6 @@ public class ReleaseManagerRestController {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReleaseManagerRestController.class);
 
-    @RequestMapping(value = "/getVerifiedReleasedAppsDetail", method = RequestMethod.POST)
-    public @ResponseBody
-    Map<String, String> getVerifiedReleasedAppsDetail(@RequestBody String json) {
-        HashMap<String, String> result = new HashMap<>();
-        //get release information for github_releases table with PreVerified state.
-        DatabaseDAOAdapter databaseDAOAdapter
-                = DAOFactory.getDatabaseDAO(JCPSServletApplication.DATABASE);
-        ArrayList<ReleasedApp> releasedApps = new ArrayList<>();
-        StatusMessage statusMessage = new StatusMessage();
-        databaseDAOAdapter.getVerifiedReleasedAppsDetail(releasedApps, statusMessage);
-        if (statusMessage.getCode() == StatusMessage.Code.SUCCESS) {
-            Gson gsonBuilder = new GsonBuilder().create();
-            String jsonFromPojo = gsonBuilder.toJson(releasedApps);
-            System.out.println(jsonFromPojo);
-            result.put("Status", StatusMessage.Code.SUCCESS.toString());
-            result.put("Apps", jsonFromPojo);
-            return result;
-        } else if (statusMessage.getCode() == StatusMessage.Code.NOTFOUND) {
-            result.put("Status", StatusMessage.Code.NOTFOUND.toString());
-            result.put("Message", statusMessage.getMessage());
-            return result;
-        } else {
-            return Collections.singletonMap("Status", "Please try after sometime");
-        }
-    }
-
     @PostMapping(value = {"/manageReleases"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, String> manageReleases() {

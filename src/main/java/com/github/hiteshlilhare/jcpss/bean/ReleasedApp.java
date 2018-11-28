@@ -364,9 +364,23 @@ public class ReleasedApp {
                 + (sourceCloneURL == null ? "NULL" : "'" + sourceCloneURL + "'");
     }
 
+    /**
+     * Returns select statement wrt given field name and value.
+     * @param fieldValue
+     * @param fieldName
+     * @return 
+     */
     public static String getSelectStatement(String fieldValue, ReleasedApp.TableField fieldName) {
         return "select * from released_app where "
                 + fieldName.toString() + " = '" + fieldValue + "'";
+    }
+    
+    /**
+     * Returns SQL statement for getting all records.
+     * @return
+     */
+    public static String getSelectAllStatement() {
+        return "select * from released_app";
     }
 
 }
