@@ -37,7 +37,7 @@ public class JCPSClientController {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(
             JCPSClientController.class);
 
-    @RequestMapping(value = "/getVerifiedReleasedAppsDetail", method = RequestMethod.POST)
+    @RequestMapping(value = "/gvrad", method = RequestMethod.POST)
     public @ResponseBody
     Map<String, String> getVerifiedReleasedAppsDetail(@RequestBody String json) {
         HashMap<String, String> result = new HashMap<>();
@@ -54,9 +54,7 @@ public class JCPSClientController {
             result.put("Apps", jsonFromPojo);
             return result;
         } else if (statusMessage.getCode() == StatusMessage.Code.NOTFOUND) {
-            result.put("Status", StatusMessage.Code.NOTFOUND.toString());
-            result.put("Message", statusMessage.getMessage());
-            return result;
+            return Collections.singletonMap("Status", statusMessage.getMessage());
         } else {
             return Collections.singletonMap("Status", "Please try after sometime");
         }
