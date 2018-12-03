@@ -9,20 +9,24 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
- 
+
 /**
- * This utility extracts files and directories of a standard zip file to
- * a destination directory.
+ * This utility extracts files and directories of a standard zip file to a
+ * destination directory.
+ *
  * @author www.codejava.net
  */
 public class UnzipUtility {
+
     /**
      * Size of the buffer to read/write data
      */
     private static final int BUFFER_SIZE = 4096;
+
     /**
-     * Extracts a zip file specified by the zipFilePath to a directory specified by
-     * destDirectory (will be created if does not exists)
+     * Extracts a zip file specified by the zipFilePath to a directory specified
+     * by destDirectory (will be created if does not exists)
+     *
      * @param zipFilePath
      * @param destDirectory
      * @throws IOException
@@ -50,8 +54,10 @@ public class UnzipUtility {
         }
         zipIn.close();
     }
+
     /**
      * Extracts a zip entry (file entry)
+     *
      * @param zipIn
      * @param filePath
      * @throws IOException
@@ -65,20 +71,20 @@ public class UnzipUtility {
         }
         bos.close();
     }
-    
+
     public static void unzip(String zipFilePath, String destDirectory, String unzipDirName) throws IOException {
-        File destFile = new File(destDirectory+"/" + unzipDirName);
-        if(destFile.exists()){
-            FileUtils.forceDelete(new File(destDirectory+"/v0.2"));
+        File destFile = new File(destDirectory + "/" + unzipDirName);
+        if (destFile.exists()) {
+            FileUtils.forceDelete(new File(destDirectory + "/" + unzipDirName));
         }
         unzip(zipFilePath, destDirectory);
     }
-    
+
     public static void main(String[] args) throws IOException {
-        String zipFilePath = JCPSSCOnstants.JCPS_SRV_DIR+"/"
-                +JCPSSCOnstants.JCPS_SRV_TEMP_DIR+"/lilharesudha.OpenPGPApplet.v0.2.zip";
-        String destDirectory = JCPSSCOnstants.JCPS_SRV_DIR+"/"
-                +JCPSSCOnstants.JCPS_SRV_TEMP_DIR;
-        unzip(zipFilePath, destDirectory,"v0.2");
+        String zipFilePath = JCPSSCOnstants.JCPS_SRV_DIR + "/"
+                + JCPSSCOnstants.JCPS_SRV_TEMP_DIR + "/lilharesudha.OpenPGPApplet.v0.2.zip";
+        String destDirectory = JCPSSCOnstants.JCPS_SRV_DIR + "/"
+                + JCPSSCOnstants.JCPS_SRV_TEMP_DIR;
+        unzip(zipFilePath, destDirectory, "v0.2");
     }
 }
