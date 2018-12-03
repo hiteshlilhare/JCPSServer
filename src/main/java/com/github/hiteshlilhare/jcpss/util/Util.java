@@ -14,6 +14,7 @@ import com.github.hiteshlilhare.jcpss.bean.RepoDetail;
 import com.github.hiteshlilhare.jcpss.db.DAOFactory;
 import com.github.hiteshlilhare.jcpss.db.DatabaseDAOAdapter;
 import com.github.hiteshlilhare.jcpss.exception.FieldNotPresentException;
+import com.github.hiteshlilhare.jcpss.exception.FileNotPresentException;
 import com.google.common.io.CharStreams;
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedInputStream;
@@ -30,6 +31,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
@@ -83,6 +87,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 /**
  *
@@ -340,12 +345,12 @@ public class Util {
             }
         }
         //Create JCAppletStore Directory if not exists.
-        File remoteRepoDir = new File(JCPSSCOnstants.JCPS_SRV_DIR 
+        File remoteRepoDir = new File(JCPSSCOnstants.JCPS_SRV_DIR
                 + "/" + JCPSSCOnstants.JCPS_REMOTE_REPO);
         if (!remoteRepoDir.exists() || remoteRepoDir.isFile()) {
             if (!remoteRepoDir.mkdir()) {
                 flag = false;
-                logger.info("Unable to create " + JCPSSCOnstants.JCPS_SRV_DIR 
+                logger.info("Unable to create " + JCPSSCOnstants.JCPS_SRV_DIR
                         + "/" + JCPSSCOnstants.JCPS_SRV_APPS_STORE_DIR + " directory.");
                 return flag;
             }
@@ -477,7 +482,9 @@ public class Util {
                             + " releases later than " + anchorTag);
                 }
             }
-            logger.info(gitHubReleases.toString());
+            logger.info(gitHubReleases.size() + " releases found for "
+                    + releaseURL);
+            //logger.info(gitHubReleases.toString());
         } catch (IOException ex) {
             logger.error("IOException:getListOfGitRepoReleases:fail", ex);
             statusMessage.setCode(StatusMessage.Code.FAILURE);
@@ -941,6 +948,30 @@ public class Util {
             if (e.getUnderlyingException() != null) {
                 e.getUnderlyingException().printStackTrace();
             }
+        }
+    }
+    /**
+     * Inspired by:
+     * https://www.callicoder.com/spring-boot-file-upload-download-rest-api-example/
+     * Load file as resource.
+     *
+     * @param path
+     * @param fileName
+     * @return
+     * @throws FileNotPresentException
+     */
+    public static Resource loadFileAsResource(String path, String fileName) throws FileNotPresentException {
+        try {
+            Path fileStorageLocation = Paths.get(path);
+            Path filePath = fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new FileNotPresentException("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            throw new FileNotPresentException("File not found " + fileName, ex);
         }
     }
 }
