@@ -43,31 +43,6 @@ public class FileController {
     private Resource resourceError;
 
     /**
-     * Inspired by:
-     * https://www.callicoder.com/spring-boot-file-upload-download-rest-api-example/
-     * Load file as resource.
-     *
-     * @param path
-     * @param fileName
-     * @return
-     * @throws FileNotPresentException
-     */
-    public Resource loadFileAsResource(String path, String fileName) throws FileNotPresentException {
-        try {
-            Path fileStorageLocation = Paths.get(path);
-            Path filePath = fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new FileNotPresentException("File not found " + fileName);
-            }
-        } catch (MalformedURLException ex) {
-            throw new FileNotPresentException("File not found " + fileName, ex);
-        }
-    }
-
-    /**
      * Handles downloading of encrypted random number.
      *
      * @param json
@@ -86,7 +61,7 @@ public class FileController {
                     + repoDetail.getRepoUserID() + "/"
                     + repoDetail.getRepoName();
             String fileName = Util.ENC_RANDOM_FILE_NAME;
-            Resource resource = loadFileAsResource(path, fileName);
+            Resource resource = Util.loadFileAsResource(path, fileName);
             // Try to determine file's content type
             String contentType = request.getServletContext()
                     .getMimeType(resource.getFile().getAbsolutePath());
@@ -146,49 +121,4 @@ public class FileController {
                         "attachment; filename=\"" + resourceError.getFilename() + "\"")
                 .body(resourceError);
     }
-
-    @RequestMapping(value = "/downloadAppZip", method = RequestMethod.POST)
-    public ResponseEntity<Resource> downloadAppZip(@RequestBody String json,
-            HttpServletRequest request) {
-        try {
-            ReleasedApp releasedApp = ReleasedApp.createReleasedAppBean(json);
-
-            // Load file as Resource
-            String path = JCPSSCOnstants.JCPS_SRV_DIR + "/"
-                    + JCPSSCOnstants.JCPS_SRV_TEMP_DIR;
-
-            String fileName = releasedApp.getDeveloperId() + "."
-                    + releasedApp.getAppName() + "."
-                    + releasedApp.getVersion() + ".zip";
-            Resource resource = loadFileAsResource(path, fileName);
-
-            // Try to determine file's content type
-            String contentType = request.getServletContext()
-                    .getMimeType(serverPubKey.getFile().getAbsolutePath());
-
-            // Fallback to the default content type if type could not 
-            // be determined
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + serverPubKey.getFilename() + "\"")
-                    .body(serverPubKey);
-        } catch (IOException ex) {
-            logger.info("downloadServPubkey:IOException:Could not determine file type.");
-        } catch (FieldNotPresentException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotPresentException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/json"))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + resourceError.getFilename() + "\"")
-                .body(resourceError);
-    }
-
 }
