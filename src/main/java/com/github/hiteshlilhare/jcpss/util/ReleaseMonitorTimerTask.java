@@ -53,6 +53,7 @@ public class ReleaseMonitorTimerTask extends TimerTask {
                 = Util.getListOfGitRepoReleases(releaseURL,
                         repoDetail.getAnchorTag(), statusMessage);
         Collections.sort(releases, new SortByLocalDateTime());
+        logger.info("Sort releases by descending order of release date");
         ArrayList<String> availableReleaseTags = new ArrayList<>();
         DatabaseDAOAdapter databaseDAOAdapter = DAOFactory.getDatabaseDAO(JCPSServletApplication.DATABASE);
         databaseDAOAdapter.getListOfReleaseTags(repoDetail.getRepoURL(),
