@@ -960,7 +960,8 @@ public class Util {
      * @return
      * @throws FileNotPresentException
      */
-    public static Resource loadFileAsResource(String path, String fileName) throws FileNotPresentException {
+    public static Resource loadFileAsResource(String path, String fileName) 
+            throws FileNotPresentException {
         try {
             Path fileStorageLocation = Paths.get(path);
             Path filePath = fileStorageLocation.resolve(fileName).normalize();
