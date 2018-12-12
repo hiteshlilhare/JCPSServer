@@ -12,12 +12,15 @@ import com.github.hiteshlilhare.jcpss.StatusMessage;
 import com.github.hiteshlilhare.jcpss.bean.ReleasedApp;
 import com.github.hiteshlilhare.jcpss.db.DAOFactory;
 import com.github.hiteshlilhare.jcpss.db.DatabaseDAOAdapter;
+import com.github.hiteshlilhare.jcpss.metadata.bean.CardAppMetaData;
+import com.github.hiteshlilhare.jcpss.metadata.parser.CardAppXmlParser;
 import static com.github.hiteshlilhare.jcpss.util.ZipUtility.zip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -33,8 +36,6 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,9 +62,67 @@ public class JCPSClientController {
         StatusMessage statusMessage = new StatusMessage();
         databaseDAOAdapter.getVerifiedReleasedAppsDetail(releasedApps, statusMessage);
         if (statusMessage.getCode() == StatusMessage.Code.SUCCESS) {
+
+            //1. Clone the Java Card Application Store into temp directory.
+            File jcAppletStoreRepo = new File(JCPSSCOnstants.JCPS_SRV_DIR
+                    + "/" + JCPSSCOnstants.JCPS_SRV_TEMP_DIR
+                    + "/" + JCPSSCOnstants.JCPS_REMOTE_REPO);
+            Git git = null;
+            try {
+                FileUtils.deleteDirectory(jcAppletStoreRepo);
+                if (jcAppletStoreRepo.exists()) {
+                    logger.info("Unable to delete " + jcAppletStoreRepo
+                            + " remote repo directory from temp");
+                    Collections.singletonMap("Status",
+                            "Please try after sometime");
+                }
+                git = Git.cloneRepository().setBranch("refs/heads/master")
+                        .setURI(REMOTE_REPO_URL)
+                        .setDirectory(jcAppletStoreRepo).call();
+            } catch (GitAPIException ex) {
+                logger.error("getVerifiedReleasedAppsDetail:Unable to clone "
+                        + "java card applet store repository",
+                        ex);
+            } catch (IOException ex) {
+                logger.error(
+                        "getVerifiedReleasedAppsDetail:Unable to delete java "
+                        + "card applet store local repository",
+                        ex);
+            } finally {
+                if (git != null) {
+                    git.close();
+                }
+            }
+            //2. Get meta data about application.
+            for (ReleasedApp releasedApp : releasedApps) {
+                File xmlFileDir = new File(JCPSSCOnstants.JCPS_SRV_DIR
+                        + "/" + JCPSSCOnstants.JCPS_SRV_TEMP_DIR
+                        + "/" + JCPSSCOnstants.JCPS_REMOTE_REPO
+                        + "/" + releasedApp.getDeveloperId()
+                        + "/" + releasedApp.getAppName()
+                        + "/" + releasedApp.getVersion());
+                File xmlFiles[] = xmlFileDir.listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File file) {
+                        return file.getName().endsWith(".xml");
+                    }
+                });
+                if (xmlFiles.length > 0) {
+                    try {
+                        //Create the parser instance
+                        CardAppXmlParser parser = new CardAppXmlParser();
+                        //Parse the file
+                        CardAppMetaData appMetaData = parser.parseXml(
+                                new FileInputStream(xmlFiles[0]));
+                        releasedApp.setAppMetaData(appMetaData);
+                    } catch (FileNotFoundException ex) {
+                        logger.info("getVerifiedReleasedAppsDetail", ex);
+                    }
+                }
+            }
+            //System.out.println(jsonFromPojo);
             Gson gsonBuilder = new GsonBuilder().create();
             String jsonFromPojo = gsonBuilder.toJson(releasedApps);
-            //System.out.println(jsonFromPojo);
             result.put("Status", StatusMessage.Code.SUCCESS.toString());
             result.put("Apps", jsonFromPojo);
             return result;
@@ -81,12 +140,13 @@ public class JCPSClientController {
         ReleasedApp releasedApp = gsonBuilder.fromJson(json, ReleasedApp.class);
         //1. Clone the Java Card Application Store into temp directory.
         File jcAppletStoreRepo = new File(JCPSSCOnstants.JCPS_SRV_DIR
-                + "/" + JCPSSCOnstants.JCPS_SRV_TEMP_DIR + "/" + JCPSSCOnstants.JCPS_REMOTE_REPO);
+                + "/" + JCPSSCOnstants.JCPS_SRV_TEMP_DIR
+                + "/" + JCPSSCOnstants.JCPS_REMOTE_REPO);
         Git git = null;
         try {
             FileUtils.deleteDirectory(jcAppletStoreRepo);
             if (jcAppletStoreRepo.exists()) {
-                logger.info("Unable to delete " + jcAppletStoreRepo 
+                logger.info("Unable to delete " + jcAppletStoreRepo
                         + " remote repo directory from temp");
                 Collections.singletonMap("Status", "Please try after sometime");
             }
@@ -167,8 +227,8 @@ public class JCPSClientController {
                 + JCPSSCOnstants.JCPS_SRV_TEMP_DIR;
         OutputStream out = null;
         FileInputStream in = null;
+        Path appZipPath = Paths.get(path, fileName);
         try {
-            Path appZipPath = Paths.get(path, fileName);
             // Try to determine file's content type
             String contentType = request.getServletContext()
                     .getMimeType(appZipPath.toString());
@@ -187,10 +247,9 @@ public class JCPSClientController {
 
             // copy from in to out
             IOUtils.copy(in, out);
-            //Delete the app zip file
-            FileUtils.forceDelete(appZipPath.toFile());
+
         } catch (IOException ex) {
-            logger.info("downloadServPubkey:", ex);
+            logger.info("downloadAppZip:", ex);
         } finally {
             if (out != null) {
                 try {
@@ -202,6 +261,8 @@ public class JCPSClientController {
             if (in != null) {
                 try {
                     in.close();
+                    //Delete the app zip file
+                    FileUtils.forceDelete(appZipPath.toFile());
                 } catch (IOException ex) {
                     //ignore.
                 }

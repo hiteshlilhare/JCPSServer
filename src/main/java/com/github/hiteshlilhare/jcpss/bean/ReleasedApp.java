@@ -1,6 +1,7 @@
 package com.github.hiteshlilhare.jcpss.bean;
 
 import com.github.hiteshlilhare.jcpss.exception.FieldNotPresentException;
+import com.github.hiteshlilhare.jcpss.metadata.bean.CardAppMetaData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -40,6 +41,7 @@ public class ReleasedApp {
     //Corresponds to remearks in github_releases table and used for updating remarks for
     //releases in github_releases table.
     private String remarks;
+    private CardAppMetaData appMetaData = new CardAppMetaData();
 
     @Override
     public String toString() {
@@ -51,6 +53,14 @@ public class ReleasedApp {
                 + "Status: " + status + System.lineSeparator() + "Remarks: " + remarks;
     }
 
+    public CardAppMetaData getAppMetaData() {
+        return appMetaData;
+    }
+
+    public void setAppMetaData(CardAppMetaData appMetaData) {
+        this.appMetaData = appMetaData;
+    }
+    
     /**
      * Creates ReleasedApp bean object from json.
      *

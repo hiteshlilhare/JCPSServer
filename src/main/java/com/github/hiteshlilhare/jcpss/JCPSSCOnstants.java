@@ -12,7 +12,9 @@ import javax.swing.filechooser.FileSystemView;
  * @author Hitesh
  */
 public class JCPSSCOnstants {
-    public final static String JCPS_SRV_DIR = FileSystemView.getFileSystemView().getDefaultDirectory() + "/JCPSServer";
+    public final static String JCPS_SRV_DIR = 
+            FileSystemView.getFileSystemView().getDefaultDirectory() 
+            + "/JCPSServer";
     public final static String JCPS_SRV_DB_DIR = "db";
     public final static String JCPS_SRV_APPS_DIR = "appsource";
     public final static String JCPS_SRV_APPS_STORE_DIR = "appstore";

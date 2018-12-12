@@ -9,8 +9,6 @@ import com.github.hiteshlilhare.jcpss.bean.ReleasedApp;
 import com.github.hiteshlilhare.jcpss.db.DAOFactory;
 import com.github.hiteshlilhare.jcpss.db.DatabaseDAOAdapter;
 import com.github.hiteshlilhare.jcpss.exception.FieldNotPresentException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
